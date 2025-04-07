@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JHA Generator - Extended</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f2f2f2;
+    }
+    h2 {
+      color: #333;
+    }
+    .task-section {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 30px;
+      border: 1px solid #ccc;
+    }
+    select, button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .output {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+      margin-top: 20px;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Job Hazard Analysis Generator</h2>
+
+<div id="tasks-container">
+  <!-- Task sections will be inserted here -->
+</div>
+
+<button onclick="generateAll()">Generate All JHAs</button>
+
+<div id="output" class="output">Generated JHAs will appear here...</div>
+
+<div class="buttons">
+  <button onclick="copyText()">Copy</button>
+</div>
+
+<script>
+  const taskData = [
+    {
+      id: 1,
+      activities: ["Walking to job front", "Climbing ladder", "Carrying materials"],
+      hazards: ["Slips, trips and falls", "Fall from height", "Manual handling injury"],
+      environments: ["Uneven ground", "Wet stairs", "Confined space"],
+      controls: [
+        "Use 3 points of contact",
+        "Keep eyes on path",
+        "Wear proper footwear",
+        "Use mechanical aid",
+        "Inspect area before entry"
+      ]
+    },
+    {
+      id: 2,
+      activities: ["Using power tools", "Working near traffic", "Welding"],
+      hazards: ["Eye injury", "Struck by vehicle", "Burns"],
+      environments: ["Low visibility", "Open work zone", "Hot surfaces"],
+      controls: [
+        "Wear safety glasses",
+        "Use spotter",
+        "Use welding shield",
+        "Set up barricades",
+        "Follow permit to work"
+      ]
+    },
+    {
+      id: 3,
+      activities: ["Working in pit", "Operating machinery", "Cutting material"],
+      hazards: ["Crushing", "Entanglement", "Lacerations"],
+      environments: ["Restricted space", "Moving equipment", "Sharp edges"],
+      controls: [
+        "Use lockout-tagout",
+        "Keep safe distance",
+        "Use gloves",
+        "Have standby person",
+        "Use correct tool"
+      ]
+    }
+  ];
+
+  function createTaskSection(task, index) {
+    let section = `<div class="task-section">
+      <h3>Task ${index + 1}</h3>
+      <label>Activity:</label>
+      <select id="activity${index}">` +
+      task.activities.map(a => `<option>${a}</option>`).join("") +
+      `</select>
+
+      <label>Hazard:</label>
+      <select id="hazard${index}">` +
+      task.hazards.map(h => `<option>${h}</option>`).join("") +
+      `</select>
+
+      <label>Environment:</label>
+      <select id="environment${index}">` +
+      task.environments.map(e => `<option>${e}</option>`).join("") +
+      `</select>
+
+      <label>Controls (select 3):</label>
+      <select id="control${index}" multiple size="5">` +
+      task.controls.map(c => `<option>${c}</option>`).join("") +
+      `</select>
+    </div>`;
+    return section;
+  }
+
+  document.getElementById("tasks-container").innerHTML = taskData.map((task, i) => createTaskSection(task, i)).join("");
+
+  function generateAll() {
+    let output = "";
+
+    for (let i = 0; i < 3; i++) {
+      let activity = document.getElementById("activity" + i).value;
+      let hazard = document.getElementById("hazard" + i).value;
+      let environment = document.getElementById("environment" + i).value;
+      let controlOptions = document.getElementById("control" + i);
+      let selectedControls = Array.from(controlOptions.selectedOptions).map(opt => opt.text);
+
+      let riskText = `Task ${i + 1} - Hazard:
+We will be ${activity.toLowerCase()}, which exposes us to ${hazard.toLowerCase()} due to ${environment.toLowerCase()}, potentially resulting in injury.
+`;
+
+      let controlText = `We will control this hazard by:
+` + selectedControls.map(c => "- " + c).join("
+");
+
+      output += `${riskText}
+${controlText}
+
+`;
+    }
+
+    document.getElementById("output").innerText = output.trim();
+  }
+
+  function copyText() {
+    const text = document.getElementById("output").innerText;
+    navigator.clipboard.writeText(text);
+    alert("JHA copied to clipboard!");
+  }
+</script>
+
+</body>
+</html>
